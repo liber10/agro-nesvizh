@@ -1,0 +1,25 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const guides = await getCollection('guides');
+  return guides.map((guide) => ({ params: { slug: guide.slug }, props: { guide } }));
+}
+
+const { guide } = Astro.props;
+const { Content } = await render(guide);
+---
+<BaseLayout title={`${guide.data.title} — Летопись Несвижа`} description={guide.data.excerpt} image={guide.data.image}>
+  <article class="px-5 py-14 lg:px-8">
+    <div class="mx-auto max-w-4xl">
+      <a href="/chronicle" class="text-sm font-bold text-burgundy">← Вернуться к летописи</a>
+      <img class="mt-8 h-[420px] w-full rounded-[2rem] object-cover shadow-old" src={guide.data.image} alt={guide.data.title} />
+      <h1 class="mt-10 font-display text-5xl font-black text-burgundy md:text-7xl">{guide.data.title}</h1>
+      <p class="mt-5 text-xl italic leading-8 text-ink/60">{guide.data.excerpt}</p>
+      <div class="prose prose-lg mt-10 max-w-none prose-headings:font-display prose-headings:text-burgundy prose-p:leading-8 prose-p:text-ink/75">
+        <Content />
+      </div>
+    </div>
+  </article>
+</BaseLayout>

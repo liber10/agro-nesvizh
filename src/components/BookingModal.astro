@@ -1,0 +1,156 @@
+<div id="booking-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 px-4 py-8 backdrop-blur-sm" aria-hidden="true">
+  <div class="relative max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-[2rem] border border-gold/40 bg-[#fff8ea] p-6 shadow-old md:p-10">
+    <button class="absolute right-5 top-5 rounded-full border border-burgundy/20 px-3 py-1 text-sm font-bold text-burgundy" data-booking-close>Закрыть</button>
+    <div class="mb-8 text-center">
+      <div class="mx-auto mb-4 h-16 w-16 rounded-full bg-burgundy/10 p-2">
+        <img src="/images/decor/wax-seal-button.png" alt="" class="h-full w-full object-contain" />
+      </div>
+      <p class="text-xs font-extrabold uppercase tracking-[.32em] text-burgundy/65">Грамота на бронь</p>
+      <h2 class="mt-2 font-display text-4xl font-black text-burgundy">Оставить заявку</h2>
+      <p class="mt-3 text-sm leading-6 text-ink/65">Заявка уйдёт владельцу в Telegram. После этого с вами свяжутся для подтверждения дат.</p>
+    </div>
+
+    <form id="booking-form" class="grid gap-4">
+      <input type="hidden" name="roomTitle" id="booking-room-title" />
+      <input type="hidden" name="roomSlug" id="booking-room-slug" />
+      <input type="hidden" name="checkIn" id="booking-checkin" />
+      <input type="hidden" name="checkOut" id="booking-checkout" />
+
+      <label class="grid gap-2 text-sm font-bold text-ink/80">
+        Ваше имя
+        <input class="rounded-xl border border-gold/40 bg-white/70 px-4 py-3 outline-none focus:border-burgundy" name="name" required placeholder="Например, Юрий" />
+      </label>
+      <label class="grid gap-2 text-sm font-bold text-ink/80">
+        Телефон
+        <input class="rounded-xl border border-gold/40 bg-white/70 px-4 py-3 outline-none focus:border-burgundy" name="phone" required data-phone-mask placeholder="+375 (29) 554-80-10" />
+      </label>
+      <label class="grid gap-2 text-sm font-bold text-ink/80">
+        Где удобнее общаться
+        <select class="rounded-xl border border-gold/40 bg-white/70 px-4 py-3 outline-none focus:border-burgundy" name="messenger" required>
+          <option value="Telegram">Telegram</option>
+          <option value="WhatsApp">WhatsApp</option>
+          <option value="MAX">MAX</option>
+          <option value="Звонок">Звонок</option>
+        </select>
+      </label>
+      <div class="grid gap-4 md:grid-cols-2">
+        <label class="grid gap-2 text-sm font-bold text-ink/80">
+          Заезд
+          <input class="rounded-xl border border-gold/40 bg-white/70 px-4 py-3 outline-none focus:border-burgundy" type="date" name="manualCheckIn" />
+        </label>
+        <label class="grid gap-2 text-sm font-bold text-ink/80">
+          Выезд
+          <input class="rounded-xl border border-gold/40 bg-white/70 px-4 py-3 outline-none focus:border-burgundy" type="date" name="manualCheckOut" />
+        </label>
+      </div>
+      <label class="grid gap-2 text-sm font-bold text-ink/80">
+        Комментарий
+        <textarea class="min-h-28 rounded-xl border border-gold/40 bg-white/70 px-4 py-3 outline-none focus:border-burgundy" name="comment" placeholder="Количество гостей, дети, питомцы, время приезда"></textarea>
+      </label>
+      <label class="flex items-start gap-3 text-xs leading-5 text-ink/70">
+        <input class="mt-1" type="checkbox" name="privacy" required />
+        <span>Я согласен на обработку персональных данных и принимаю правила бронирования.</span>
+      </label>
+      <button class="mt-3 rounded-2xl px-6 py-4 btn-gold" type="submit">Отправить гонца</button>
+      <p class="hidden rounded-xl border px-4 py-3 text-sm font-semibold" data-form-status></p>
+    </form>
+  </div>
+</div>
+<script>
+  // @ts-nocheck
+  const modal = document.getElementById('booking-modal');
+  const form = document.getElementById('booking-form');
+  const statusEl = document.querySelector('[data-form-status]');
+  const roomTitleInput = document.getElementById('booking-room-title');
+  const roomSlugInput = document.getElementById('booking-room-slug');
+  const checkInInput = document.getElementById('booking-checkin');
+  const checkOutInput = document.getElementById('booking-checkout');
+  const manualCheckIn = form?.querySelector('input[name="manualCheckIn"]');
+  const manualCheckOut = form?.querySelector('input[name="manualCheckOut"]');
+
+  function openBookingModal(detail = {}) {
+    roomTitleInput.value = detail.roomTitle || '';
+    roomSlugInput.value = detail.roomSlug || '';
+    checkInInput.value = detail.checkIn || '';
+    checkOutInput.value = detail.checkOut || '';
+    if (detail.checkIn) manualCheckIn.value = detail.checkIn;
+    if (detail.checkOut) manualCheckOut.value = detail.checkOut;
+    modal?.classList.remove('hidden');
+    modal?.classList.add('flex');
+    modal?.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeBookingModal() {
+    modal?.classList.add('hidden');
+    modal?.classList.remove('flex');
+    modal?.setAttribute('aria-hidden', 'true');
+  }
+
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const opener = target.closest('[data-booking-open]');
+    if (opener) {
+      openBookingModal({
+        roomTitle: opener.getAttribute('data-room-title') || '',
+        roomSlug: opener.getAttribute('data-room-slug') || '',
+        checkIn: opener.getAttribute('data-checkin') || '',
+        checkOut: opener.getAttribute('data-checkout') || ''
+      });
+    }
+    if (target.closest('[data-booking-close]')) closeBookingModal();
+    if (target === modal) closeBookingModal();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeBookingModal();
+  });
+
+  document.querySelectorAll('[data-phone-mask]').forEach((input) => {
+    input.addEventListener('input', () => {
+      let raw = input.value.replace(/\D/g, '');
+      if (raw.startsWith('8')) raw = `7${raw.slice(1)}`;
+      if (raw.startsWith('9')) raw = `7${raw}`;
+
+      if (raw.startsWith('375') || raw.startsWith('3')) {
+        if (!raw.startsWith('375')) raw = `375${raw.slice(1)}`;
+        raw = raw.slice(0, 12);
+        const p = raw.padEnd(12, '_');
+        input.value = `+375 (${p.slice(3,5)}) ${p.slice(5,8)}-${p.slice(8,10)}-${p.slice(10,12)}`.replace(/[_-]+$/g, '');
+        return;
+      }
+
+      if (raw.startsWith('7')) {
+        raw = raw.slice(0, 11);
+        const p = raw.padEnd(11, '_');
+        input.value = `+7 (${p.slice(1,4)}) ${p.slice(4,7)}-${p.slice(7,9)}-${p.slice(9,11)}`.replace(/[_-]+$/g, '');
+      }
+    });
+  });
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    statusEl.classList.remove('hidden');
+    statusEl.className = 'rounded-xl border border-gold/40 bg-gold/10 px-4 py-3 text-sm font-semibold text-ink';
+    statusEl.textContent = 'Отправляем заявку...';
+
+    const data = Object.fromEntries(new FormData(form));
+    data.checkIn = data.checkIn || data.manualCheckIn || '';
+    data.checkOut = data.checkOut || data.manualCheckOut || '';
+
+    try {
+      const response = await fetch('/api/telegram', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (!response.ok) throw new Error('Telegram API error');
+      statusEl.className = 'rounded-xl border border-green-700/30 bg-green-50 px-4 py-3 text-sm font-semibold text-green-800';
+      statusEl.textContent = 'Заявка отправлена. Скоро с вами свяжутся.';
+      form.reset();
+    } catch (error) {
+      statusEl.className = 'rounded-xl border border-burgundy/30 bg-burgundy/10 px-4 py-3 text-sm font-semibold text-burgundy';
+      statusEl.textContent = 'Не удалось отправить заявку. Проверьте TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID в Netlify.';
+    }
+  });
+</script>

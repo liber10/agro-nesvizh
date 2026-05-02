@@ -1,0 +1,26 @@
+<header class="sticky top-0 z-40 border-b border-gold/30 bg-ivory/95 backdrop-blur">
+  <div class="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
+    <a href="/" class="font-display text-3xl font-black tracking-[.08em] text-burgundy">AgroNesvizh</a>
+    <nav class="hidden items-center gap-8 font-display text-lg font-bold tracking-[.14em] md:flex">
+      <a class="hover:text-burgundy" href="/rooms">Номера</a>
+      <a class="hover:text-burgundy" href="/chronicle">Летопись</a>
+      <a class="hover:text-burgundy" href="/about">О нас</a>
+      <a class="hover:text-burgundy" href="/contacts">Контакты</a>
+    </nav>
+    <button class="rounded-full border border-gold/60 px-4 py-2 text-sm font-bold uppercase tracking-[.12em] text-burgundy md:hidden" data-mobile-menu>
+      Меню
+    </button>
+  </div>
+  <nav class="hidden border-t border-gold/20 bg-ivory px-5 py-4 font-display text-lg font-bold tracking-[.12em]" data-mobile-nav>
+    <a class="block py-2" href="/rooms">Номера</a>
+    <a class="block py-2" href="/chronicle">Летопись</a>
+    <a class="block py-2" href="/about">О нас</a>
+    <a class="block py-2" href="/contacts">Контакты</a>
+  </nav>
+</header>
+<script>
+  // @ts-nocheck
+  const menuButton = document.querySelector('[data-mobile-menu]');
+  const mobileNav = document.querySelector('[data-mobile-nav]');
+  menuButton?.addEventListener('click', () => mobileNav?.classList.toggle('hidden'));
+</script>

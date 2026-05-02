@@ -1,0 +1,26 @@
+---
+import type { CollectionEntry } from 'astro:content';
+interface Props { room: CollectionEntry<'rooms'>; }
+const { room } = Astro.props;
+---
+<article class="group overflow-hidden rounded-sm paper-panel transition duration-300 hover:-translate-y-1 hover:shadow-old">
+  <a href={`/rooms/${room.slug}`} class="block">
+    <div class="relative aspect-[4/2.35] overflow-hidden bg-burgundy/10">
+      <img class="vintage-image h-full w-full object-cover" src={room.data.heroImage} alt={room.data.title} loading="lazy" />
+      <span class="absolute bottom-0 left-0 bg-burgundy px-3 py-2 text-xs font-bold text-ivory">ID: {room.data.sutochnoId}</span>
+    </div>
+    <div class="p-6">
+      <h3 class="font-display text-2xl font-black text-ink">{room.data.title}</h3>
+      <p class="mt-2 min-h-14 text-sm italic leading-6 text-ink/60">{room.data.shortDescription}</p>
+      <div class="mt-5 grid grid-cols-3 gap-2 border-y border-gold/20 py-4 text-center text-xs text-ink/65">
+        <span><b class="block text-base text-ink">{room.data.capacity}</b> гостей</span>
+        <span><b class="block text-base text-ink">{room.data.area}</b> площадь</span>
+        <span><b class="block text-base text-ink">{room.data.rating ?? '—'}</b> рейтинг</span>
+      </div>
+      <div class="mt-5 flex items-center justify-between">
+        <p class="text-lg font-extrabold text-ink">от {room.data.priceFrom} {room.data.currency}<span class="text-xs font-medium italic text-ink/55"> / сутки</span></p>
+        <span class="text-sm font-extrabold text-burgundy">Подробнее →</span>
+      </div>
+    </div>
+  </a>
+</article>

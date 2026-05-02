@@ -1,0 +1,55 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import RoomCard from '../components/RoomCard.astro';
+import SectionTitle from '../components/SectionTitle.astro';
+import MapBlock from '../components/MapBlock.astro';
+
+const rooms = (await getCollection('rooms')).sort((a, b) => a.data.sutochnoId.localeCompare(b.data.sutochnoId));
+const guides = (await getCollection('guides')).sort((a, b) => a.data.order - b.data.order).slice(0, 3);
+---
+<BaseLayout>
+  <section class="relative min-h-[calc(100vh-76px)] overflow-hidden border-b border-gold/30">
+    <div class="absolute inset-0 bg-[#efe1ca]">
+      <img class="h-full w-full object-cover opacity-70" src="/images/decor/castle-engraving-bg.png" alt="Гравюра Несвижского замка" />
+      <div class="absolute inset-0 bg-gradient-to-b from-ivory/20 via-transparent to-[#efe1ca]/45"></div>
+    </div>
+    <div class="relative z-10 mx-auto flex min-h-[calc(100vh-76px)] max-w-6xl flex-col items-center justify-center px-5 py-16 text-center lg:px-8">
+      <p class="mb-6 text-xs font-extrabold uppercase tracking-[.55em] text-burgundy">Добро пожаловать</p>
+      <h1 class="font-display max-w-5xl text-6xl font-black leading-[.95] text-burgundy drop-shadow md:text-8xl">Агроусадьба<br />Несвижская</h1>
+      <p class="mt-8 max-w-3xl font-display text-2xl font-bold italic leading-10 text-white drop-shadow-[0_2px_4px_rgba(0,0,0,.65)] md:text-3xl">Историческая атмосфера и уют в 5 минутах от Замка Радзивиллов.</p>
+      <button class="mt-12 h-44 w-44 animate-pulse rounded-full bg-transparent p-0 transition hover:scale-105" data-booking-open aria-label="Забронировать покой">
+        <img class="h-full w-full object-contain drop-shadow-2xl" src="/images/decor/wax-seal-button.png" alt="Забронировать покой" />
+      </button>
+    </div>
+  </section>
+
+  <section id="rooms" class="px-5 py-20 lg:px-8">
+    <div class="mx-auto max-w-7xl">
+      <SectionTitle title="Наши Покои" subtitle="Отдых, достойный шляхты" />
+      <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        {rooms.map((room) => <RoomCard room={room} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-burgundy/5 px-5 py-20 lg:px-8">
+    <div class="mx-auto max-w-7xl">
+      <SectionTitle title="Летопись Несвижа" subtitle="Несколько историй, чтобы поездка началась ещё до дороги" />
+      <div class="grid gap-8 md:grid-cols-3">
+        {guides.map((guide) => (
+          <a href={`/chronicle/${guide.slug}`} class="group overflow-hidden rounded-2xl paper-panel">
+            <img class="h-56 w-full object-cover vintage-image" src={guide.data.image} alt={guide.data.title} loading="lazy" />
+            <div class="p-6">
+              <h3 class="font-display text-2xl font-black text-burgundy">{guide.data.title}</h3>
+              <p class="mt-3 text-sm leading-6 text-ink/65">{guide.data.excerpt}</p>
+              <span class="mt-5 inline-block text-sm font-extrabold text-burgundy">Читать →</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <MapBlock />
+</BaseLayout>

@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionTitle from '../components/SectionTitle.astro';
+---
+<BaseLayout title="О нас — Агроусадьба Несвижская" description="Агроусадьба Несвижская: уютные покои, историческая атмосфера и прямое бронирование.">
+  <section class="px-5 py-16 lg:px-8">
+    <div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[.9fr_1.1fr]">
+      <div>
+        <SectionTitle title="О нас" subtitle="Усадьба рядом с историческим сердцем Несвижа" />
+      </div>
+      <div class="rounded-[2rem] paper-panel p-8 text-lg leading-9 text-ink/75">
+        <p>Агроусадьба «Несвижская» — место для тех, кто приезжает в Несвиж не только переночевать, но и почувствовать ритм старого города: замок, парки, тихие улицы и вечерний двор после прогулки.</p>
+        <p class="mt-5">Сайт работает как прямой канал заявок. Вы выбираете покой, проверяете свободные даты и отправляете заявку владельцу. После этого администратор связывается с вами удобным способом и подтверждает бронь.</p>
+        <div class="mt-8 grid gap-4 md:grid-cols-3">
+          <div class="rounded-2xl bg-burgundy/5 p-5"><b class="text-burgundy">6</b><br />покоев</div>
+          <div class="rounded-2xl bg-burgundy/5 p-5"><b class="text-burgundy">14:00</b><br />заезд</div>
+          <div class="rounded-2xl bg-burgundy/5 p-5"><b class="text-burgundy">12:00</b><br />выезд</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

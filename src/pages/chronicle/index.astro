@@ -1,0 +1,25 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionTitle from '../../components/SectionTitle.astro';
+const guides = (await getCollection('guides')).sort((a, b) => a.data.order - b.data.order);
+---
+<BaseLayout title="Летопись Несвижа — Агроусадьба Несвижская" description="Истории и маршруты для гостей агроусадьбы в Несвиже.">
+  <section class="px-5 py-16 lg:px-8">
+    <div class="mx-auto max-w-7xl">
+      <SectionTitle title="Летопись Несвижа" subtitle="Истории, маршруты и спокойное погружение в место" />
+      <div class="grid gap-8 md:grid-cols-3">
+        {guides.map((guide) => (
+          <a href={`/chronicle/${guide.slug}`} class="group overflow-hidden rounded-2xl paper-panel">
+            <img class="h-64 w-full object-cover vintage-image" src={guide.data.image} alt={guide.data.title} loading="lazy" />
+            <div class="p-6">
+              <h2 class="font-display text-2xl font-black text-burgundy">{guide.data.title}</h2>
+              <p class="mt-3 text-sm leading-6 text-ink/65">{guide.data.excerpt}</p>
+              <span class="mt-5 inline-block text-sm font-extrabold text-burgundy">Читать →</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

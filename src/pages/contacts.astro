@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MapBlock from '../components/MapBlock.astro';
+---
+<BaseLayout title="Контакты — Агроусадьба Несвижская" description="Адрес, телефон и заявка на бронирование агроусадьбы в Несвиже.">
+  <section class="px-5 py-16 lg:px-8">
+    <div class="mx-auto max-w-4xl rounded-[2rem] paper-panel p-8 text-center">
+      <p class="text-xs font-extrabold uppercase tracking-[.35em] text-burgundy/65">Контакты</p>
+      <h1 class="mt-4 font-display text-5xl font-black text-burgundy">Как связаться</h1>
+      <div class="mt-8 grid gap-4 text-lg text-ink/75 md:grid-cols-2">
+        <div class="rounded-2xl bg-burgundy/5 p-6"><b>Адрес</b><br />Несвиж, Костюшко 6</div>
+        <div class="rounded-2xl bg-burgundy/5 p-6"><b>Телефон</b><br /><a href="tel:+375295548010">+375 29 554-80-10</a></div>
+      </div>
+      <button class="mt-8 rounded-2xl px-8 py-4 btn-gold" data-booking-open>Оставить заявку</button>
+    </div>
+  </section>
+  <MapBlock />
+</BaseLayout>
