@@ -1,0 +1,70 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  sauna: CollectionEntry<'saunas'>;
+}
+
+const { sauna } = Astro.props;
+---
+
+<article class="group overflow-hidden rounded-sm paper-panel transition duration-300 hover:-translate-y-1 hover:shadow-old">
+  <a href={`/sauna/${sauna.slug}`} class="grid gap-0 md:grid-cols-[1.05fr_.95fr]">
+    <div class="relative min-h-72 overflow-hidden bg-burgundy/10">
+      <img
+        class="vintage-image h-full w-full object-cover"
+        src={sauna.data.heroImage}
+        alt={sauna.data.title}
+        loading="lazy"
+      />
+
+      <span class="absolute bottom-0 left-0 bg-burgundy px-3 py-2 text-xs font-bold text-ivory">
+        Отдельный календарь
+      </span>
+    </div>
+
+    <div class="flex flex-col justify-between p-7 md:p-9">
+      <div>
+        <p class="text-xs font-extrabold uppercase tracking-[.32em] text-burgundy/65">
+          Баня при усадьбе
+        </p>
+
+        <h3 class="mt-3 font-display text-4xl font-black text-burgundy">
+          {sauna.data.title}
+        </h3>
+
+        <p class="mt-4 text-base italic leading-7 text-ink/65">
+          {sauna.data.shortDescription}
+        </p>
+
+        <div class="mt-7 grid grid-cols-3 gap-2 border-y border-gold/20 py-4 text-center text-xs text-ink/65">
+          <span>
+            <b class="block text-lg text-ink">{sauna.data.capacity}</b>
+            гостей
+          </span>
+
+          <span>
+            <b class="block text-lg text-ink">{sauna.data.duration}</b>
+            формат
+          </span>
+
+          <span>
+            <b class="block text-lg text-ink">{sauna.data.area ?? '—'}</b>
+            зона
+          </span>
+        </div>
+      </div>
+
+      <div class="mt-7 flex items-center justify-between gap-4">
+        <p class="text-lg font-extrabold text-ink">
+          от {sauna.data.priceFrom} {sauna.data.currency}
+          <span class="text-xs font-medium italic text-ink/55"> / сеанс</span>
+        </p>
+
+        <span class="text-sm font-extrabold text-burgundy">
+          Подробнее →
+        </span>
+      </div>
+    </div>
+  </a>
+</article>

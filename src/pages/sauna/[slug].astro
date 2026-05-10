@@ -1,0 +1,401 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RoomGallery from '../../components/RoomGallery.astro';
+
+export async function getStaticPaths() {
+  const saunas = await getCollection('saunas');
+
+  return saunas.map((sauna) => ({
+    params: { slug: sauna.slug },
+    props: { sauna }
+  }));
+}
+
+const { sauna } = Astro.props;
+const { Content } = await render(sauna);
+---
+
+<BaseLayout
+  title={`${sauna.data.title} — Агроусадьба Несвижская`}
+  description={sauna.data.shortDescription}
+  image={sauna.data.heroImage}
+>
+  <section class="px-5 py-10 lg:px-8">
+    <div class="mx-auto max-w-7xl">
+      <a href="/#sauna" class="text-sm font-bold text-burgundy">
+        ← На главную
+      </a>
+
+      <div class="mt-6 grid gap-10 lg:grid-cols-[1.35fr_.65fr]">
+        <div>
+          <p class="text-xs font-extrabold uppercase tracking-[.35em] text-burgundy/70">
+            Баня при усадьбе
+          </p>
+
+          <h1 class="mt-3 font-display text-5xl font-black text-burgundy md:text-7xl">
+            {sauna.data.title}
+          </h1>
+
+          <p class="mt-5 max-w-3xl text-lg leading-8 text-ink/70">
+            {sauna.data.description}
+          </p>
+
+          <div class="mt-8">
+            <RoomGallery images={sauna.data.images} title={sauna.data.title} />
+          </div>
+
+          <div class="prose prose-lg mt-12 max-w-none prose-headings:font-display prose-headings:text-burgundy prose-p:text-ink/75">
+            <Content />
+          </div>
+
+          <div class="mt-12 grid gap-6 md:grid-cols-2">
+            <div class="rounded-2xl paper-panel p-6">
+              <h2 class="font-display text-2xl font-black text-burgundy">
+                Что есть
+              </h2>
+
+              <ul class="mt-4 grid gap-2 text-sm text-ink/70">
+                {sauna.data.amenities.map((item) => <li>• {item}</li>)}
+              </ul>
+            </div>
+
+            <div class="rounded-2xl paper-panel p-6">
+              <h2 class="font-display text-2xl font-black text-burgundy">
+                Правила
+              </h2>
+
+              <ul class="mt-4 grid gap-2 text-sm text-ink/70">
+                {sauna.data.rules.map((item) => <li>• {item}</li>)}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <aside class="lg:sticky lg:top-28 lg:self-start">
+          <div class="rounded-[2rem] paper-panel p-6">
+            <p class="text-sm font-bold text-ink/60">Стоимость</p>
+
+            <p class="mt-1 font-display text-4xl font-black text-burgundy">
+              от {sauna.data.priceFrom} {sauna.data.currency}
+            </p>
+
+            <p class="text-sm italic text-ink/55">
+              за сеанс, итоговая цена подтверждается владельцем
+            </p>
+
+            <div class="mt-6 grid grid-cols-2 gap-3 text-sm">
+              <div class="rounded-xl bg-burgundy/5 p-3">
+                <b>{sauna.data.capacity}</b><br />гостей
+              </div>
+
+              <div class="rounded-xl bg-burgundy/5 p-3">
+                <b>{sauna.data.duration}</b><br />формат
+              </div>
+
+              <div class="rounded-xl bg-burgundy/5 p-3">
+                <b>{sauna.data.area ?? '—'}</b><br />зона
+              </div>
+
+              <div class="rounded-xl bg-burgundy/5 p-3">
+                <b>Google Calendar</b><br />занятость
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 rounded-[2rem] paper-panel p-6">
+            <h2 class="font-display text-3xl font-black text-burgundy">
+              Выбрать время
+            </h2>
+
+            <p class="mt-2 text-sm leading-6 text-ink/65">
+              Занятое время подгружается из отдельного Google Calendar. Выберите дату,
+              время начала и окончания — заявка уйдёт владельцу в Telegram.
+            </p>
+
+            <div class="mt-5">
+              <input
+                class="hidden"
+                id="sauna-date-calendar"
+                data-sauna-date-calendar
+                data-slug={sauna.slug}
+                data-room-title={sauna.data.title}
+              />
+            </div>
+
+            <div class="mt-5 grid gap-4">
+              <label class="grid gap-2 text-sm font-bold text-ink/80">
+                Дата посещения
+                <input
+                  class="rounded-xl border border-gold/40 bg-white/70 px-4 py-3 outline-none focus:border-burgundy"
+                  type="date"
+                  data-sauna-date
+                />
+              </label>
+
+              <div class="grid gap-4 sm:grid-cols-2">
+                <label class="grid gap-2 text-sm font-bold text-ink/80">
+                  Время начала
+                  <select
+                    class="rounded-xl border border-gold/40 bg-white/70 px-4 py-3 outline-none focus:border-burgundy"
+                    data-sauna-start-time
+                  ></select>
+                </label>
+
+                <label class="grid gap-2 text-sm font-bold text-ink/80">
+                  Время окончания
+                  <select
+                    class="rounded-xl border border-gold/40 bg-white/70 px-4 py-3 outline-none focus:border-burgundy"
+                    data-sauna-end-time
+                  ></select>
+                </label>
+              </div>
+            </div>
+
+            <div
+              class="mt-5 rounded-xl border border-gold/40 bg-gold/10 px-4 py-3 text-sm leading-6 text-ink/70"
+              data-sauna-booked-slots
+            >
+              Загружаем занятость бани...
+            </div>
+
+            <button
+              class="mt-6 w-full rounded-2xl px-6 py-4 btn-gold disabled:cursor-not-allowed disabled:opacity-50"
+              data-booking-open
+              data-booking-type="Баня"
+              data-room-title={sauna.data.title}
+              data-room-slug={sauna.slug}
+              disabled
+            >
+              Забронировать баню
+            </button>
+
+            <p class="mt-3 text-xs leading-5 text-ink/55">
+              После отправки заявки владелец подтвердит время и вручную закроет слот в Google Calendar.
+            </p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  // @ts-nocheck
+  import flatpickr from 'flatpickr';
+  import { Russian } from 'flatpickr/dist/l10n/ru.js';
+
+  const calendarInput = document.querySelector('[data-sauna-date-calendar]');
+  const dateInput = document.querySelector('[data-sauna-date]');
+  const startSelect = document.querySelector('[data-sauna-start-time]');
+  const endSelect = document.querySelector('[data-sauna-end-time]');
+  const bookedSlotsBox = document.querySelector('[data-sauna-booked-slots]');
+  const bookingButton = document.querySelector('[data-booking-open][data-booking-type="Баня"]');
+
+  let bookedSlots = [];
+
+  const OPEN_TIME = '10:00';
+  const CLOSE_TIME = '23:00';
+  const STEP_MINUTES = 30;
+  const MIN_DURATION_MINUTES = 120;
+
+  function timeToMinutes(time) {
+    const [hours, minutes] = time.split(':').map(Number);
+    return hours * 60 + minutes;
+  }
+
+  function minutesToTime(total) {
+    const hours = String(Math.floor(total / 60)).padStart(2, '0');
+    const minutes = String(total % 60).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  }
+
+  function makeTimeOptions() {
+    const start = timeToMinutes(OPEN_TIME);
+    const end = timeToMinutes(CLOSE_TIME);
+    const values = [];
+
+    for (let current = start; current <= end; current += STEP_MINUTES) {
+      values.push(minutesToTime(current));
+    }
+
+    return values;
+  }
+
+  function fillSelect(select, values, placeholder) {
+    select.innerHTML = '';
+
+    const placeholderOption = document.createElement('option');
+    placeholderOption.value = '';
+    placeholderOption.textContent = placeholder;
+    select.appendChild(placeholderOption);
+
+    values.forEach((value) => {
+      const option = document.createElement('option');
+      option.value = value;
+      option.textContent = value;
+      select.appendChild(option);
+    });
+  }
+
+  function intervalsOverlap(startA, endA, startB, endB) {
+    return startA < endB && startB < endA;
+  }
+
+  function getSlotsForDate(date) {
+    return bookedSlots.filter((slot) => slot.date === date);
+  }
+
+  function hasConflict(date, startTime, endTime) {
+    const selectedStart = timeToMinutes(startTime);
+    const selectedEnd = timeToMinutes(endTime);
+
+    return getSlotsForDate(date).some((slot) => {
+      const bookedStart = timeToMinutes(slot.start);
+      const bookedEnd = timeToMinutes(slot.end);
+
+      return intervalsOverlap(selectedStart, selectedEnd, bookedStart, bookedEnd);
+    });
+  }
+
+  function renderBookedSlots(date) {
+    if (!date) {
+      bookedSlotsBox.textContent = 'Выберите дату, чтобы увидеть занятое время.';
+      return;
+    }
+
+    const slots = getSlotsForDate(date);
+
+    if (!slots.length) {
+      bookedSlotsBox.textContent = 'На выбранную дату занятых интервалов не найдено.';
+      return;
+    }
+
+    bookedSlotsBox.innerHTML = `
+      <b>Занято на ${date}:</b>
+      <ul class="mt-2 grid gap-1">
+        ${slots.map((slot) => `<li>• ${slot.start}–${slot.end}</li>`).join('')}
+      </ul>
+    `;
+  }
+
+  function updateEndOptions() {
+    const startTime = startSelect.value;
+
+    if (!startTime) {
+      fillSelect(endSelect, [], 'Сначала выберите начало');
+      return;
+    }
+
+    const startMinutes = timeToMinutes(startTime);
+    const closeMinutes = timeToMinutes(CLOSE_TIME);
+    const values = [];
+
+    for (
+      let current = startMinutes + MIN_DURATION_MINUTES;
+      current <= closeMinutes;
+      current += STEP_MINUTES
+    ) {
+      values.push(minutesToTime(current));
+    }
+
+    fillSelect(endSelect, values, 'Выберите окончание');
+  }
+
+  function updateBookingButton() {
+    const date = dateInput.value;
+    const startTime = startSelect.value;
+    const endTime = endSelect.value;
+
+    if (!date || !startTime || !endTime) {
+      bookingButton.disabled = true;
+      bookingButton.removeAttribute('data-checkin');
+      bookingButton.removeAttribute('data-checkout');
+      bookingButton.removeAttribute('data-start-time');
+      bookingButton.removeAttribute('data-end-time');
+      return;
+    }
+
+    const startMinutes = timeToMinutes(startTime);
+    const endMinutes = timeToMinutes(endTime);
+
+    if (endMinutes - startMinutes < MIN_DURATION_MINUTES) {
+      bookingButton.disabled = true;
+      bookedSlotsBox.textContent = 'Минимальная длительность бронирования бани — 2 часа.';
+      return;
+    }
+
+    if (hasConflict(date, startTime, endTime)) {
+      bookingButton.disabled = true;
+      renderBookedSlots(date);
+      bookedSlotsBox.innerHTML += `<p class="mt-3 font-bold text-burgundy">Выбранное время пересекается с занятой бронью.</p>`;
+      return;
+    }
+
+    bookingButton.disabled = false;
+    bookingButton.setAttribute('data-checkin', date);
+    bookingButton.setAttribute('data-checkout', date);
+    bookingButton.setAttribute('data-start-time', startTime);
+    bookingButton.setAttribute('data-end-time', endTime);
+  }
+
+  function syncDate(date) {
+    dateInput.value = date || '';
+    renderBookedSlots(date);
+    updateBookingButton();
+  }
+
+  if (calendarInput) {
+    const slug = calendarInput.dataset.slug;
+
+    fillSelect(startSelect, makeTimeOptions().slice(0, -1), 'Выберите начало');
+    fillSelect(endSelect, [], 'Сначала выберите начало');
+
+    fetch(`/api/sauna-availability/${slug}`)
+      .then((response) => response.json())
+      .then((data) => {
+        bookedSlots = data.bookedSlots || [];
+
+        bookedSlotsBox.textContent = 'Выберите дату, чтобы увидеть занятое время.';
+
+        flatpickr(calendarInput, {
+          inline: true,
+          mode: 'single',
+          minDate: 'today',
+          dateFormat: 'Y-m-d',
+          locale: Russian,
+          onChange: (selectedDates, dateStr) => {
+            syncDate(dateStr);
+          }
+        });
+      })
+      .catch(() => {
+        bookedSlotsBox.textContent = 'Не удалось загрузить календарь. Можно отправить заявку вручную после выбора времени.';
+
+        flatpickr(calendarInput, {
+          inline: true,
+          mode: 'single',
+          minDate: 'today',
+          dateFormat: 'Y-m-d',
+          locale: Russian,
+          onChange: (selectedDates, dateStr) => {
+            syncDate(dateStr);
+          }
+        });
+      });
+
+    dateInput.addEventListener('change', () => {
+      syncDate(dateInput.value);
+    });
+
+    startSelect.addEventListener('change', () => {
+      updateEndOptions();
+      updateBookingButton();
+    });
+
+    endSelect.addEventListener('change', () => {
+      renderBookedSlots(dateInput.value);
+      updateBookingButton();
+    });
+  }
+</script>

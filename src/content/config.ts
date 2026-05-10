@@ -29,6 +29,26 @@ const rooms = defineCollection({
   })
 });
 
+const saunas = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    calendarId: z.string(),
+    icalUrl: z.string().url(),
+    priceFrom: z.number(),
+    currency: z.string().default('BYN'),
+    capacity: z.number(),
+    duration: z.string(),
+    area: z.string().optional(),
+    shortDescription: z.string(),
+    description: z.string(),
+    amenities: z.array(z.string()),
+    rules: z.array(z.string()),
+    images: z.array(z.string().url()),
+    heroImage: z.string().url()
+  })
+});
+
 const guides = defineCollection({
   type: 'content',
   schema: z.object({
@@ -39,5 +59,4 @@ const guides = defineCollection({
   })
 });
 
-export const collections = { rooms, guides };
-
+export const collections = { rooms, saunas, guides };
