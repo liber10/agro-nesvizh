@@ -4,3 +4,4 @@ dist/
 .netlify/
 .env
 .env.*
+raw-photos/

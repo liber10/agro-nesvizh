@@ -2,7 +2,7 @@
 title: "Баня"
 calendarId: "google-calendar-banya"
 icalUrl: "https://calendar.google.com/calendar/ical/53f370dbf42b3d250b7e4ae4d04e76c02f4d2936189614048f4880622327289d%40group.calendar.google.com/private-52966f4bb4d43090c4cbcee7373ae639/basic.ics"
-priceFrom: 120
+priceFrom: 100
 currency: "BYN"
 capacity: 8
 duration: "от 2 часов"

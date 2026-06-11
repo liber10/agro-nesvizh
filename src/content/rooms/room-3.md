@@ -4,7 +4,7 @@ slug: "room-3"
 sutochnoId: "545347"
 sourceUrl: "https://sutochno.ru/front/searchapp/detail/545347"
 icalUrl: "https://sutochno.ru/calendar/ical/74788df0701e34680f57d8d7b4548f866cbd92.ics"
-priceFrom: 135
+priceFrom: 100
 currency: "BYN"
 capacity: 4
 baseGuests: 2

@@ -4,7 +4,7 @@ slug: "room-1"
 sutochnoId: "545275"
 sourceUrl: "https://sutochno.ru/front/searchapp/detail/545275"
 icalUrl: "https://sutochno.ru/calendar/ical/8cf17763e60da41a8217d81f616c0710c3fb04.ics"
-priceFrom: 118
+priceFrom: 100
 currency: "BYN"
 capacity: 4
 baseGuests: 2
@@ -17,7 +17,7 @@ reviews: 94
 shortDescription: "Семейный номер на первом этаже с ванной комнатой, террасой и видом во двор."
 description: "Семейный номер с ванной комнатой на 4 спальных места. В номере есть телевизор, холодильник и выход на террасу с видом на приусадебную территорию. Гостям доступна кухня-гостиная 40 м². Минимальное бронирование — от 2 человек. Детям до 10 лет предусмотрена скидка 50%."
 amenities:
-  - "Wi‑Fi"
+  - "Wi-Fi"
   - "Телевизор"
   - "Холодильник"
   - "Балкон / терраса"
@@ -45,12 +45,16 @@ rules:
   - "Вечеринки и мероприятия — по согласованию"
   - "Можно с детьми любого возраста"
   - "Расчёт при заселении производится в BYN"
-heroImage: "https://static.sutochno.ru/doc/files/objects/0/545/275/1020x690/69f1f4cac2214.png"
+heroImage: "/images/rooms/room-1/agrousadba-nesvizhskaya-dvoryanskiy-nomer-1-spalnya.webp"
 images:
-  - "https://static.sutochno.ru/doc/files/objects/0/545/275/1020x690/69f1f4cac2214.png"
-  - "https://static.sutochno.ru/doc/files/objects/0/545/275/1020x690/69f1f4c8c6c8b.png"
-  - "https://static.sutochno.ru/doc/files/objects/0/545/275/1020x690/69f1f4c6a59c5.png"
-  - "https://static.sutochno.ru/doc/files/objects/0/545/275/1020x690/5b2b8dc88f4d8.jpg"
+  - "/images/rooms/room-1/agrousadba-nesvizhskaya-dvoryanskiy-nomer-1-spalnya.webp"
+  - "/images/rooms/room-1/agrousadba-nesvizhskaya-dvoryanskiy-nomer-1-vannaya-komnata.webp"
+  - "/images/rooms/room-1/agrousadba-nesvizhskaya-dvoryanskiy-nomer-1-dushevaya-zona.webp"
+  - "/images/rooms/room-1/agrousadba-nesvizhskaya-dvoryanskiy-nomer-1-vtoroy-rakurs-spalni.webp"
+  - "/images/rooms/room-1/agrousadba-nesvizhskaya-dvoryanskiy-nomer-1-detal-interiera.webp"
+  - "/images/rooms/room-1/agrousadba-nesvizhskaya-dvoryanskiy-nomer-1-kuhonnyy-ugolok.webp"
+  - "/images/rooms/room-1/agrousadba-nesvizhskaya-dvoryanskiy-nomer-1-zona-otdyha.webp"
+  - "/images/rooms/room-1/agrousadba-nesvizhskaya-dvoryanskiy-nomer-1-obshchiy-vid.webp"
 ---
 
 Этот покой подойдёт семье или небольшой компании, которой важны первый этаж, отдельная ванная комната и быстрый выход на двор усадьбы.

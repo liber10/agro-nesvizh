@@ -24,8 +24,10 @@ const rooms = defineCollection({
     kitchen: z.array(z.string()),
     bathroom: z.array(z.string()),
     rules: z.array(z.string()),
-    images: z.array(z.string().url()),
-    heroImage: z.string().url()
+
+    // Поддерживает и локальные пути /images/..., и внешние https://...
+    images: z.array(z.string()),
+    heroImage: z.string()
   })
 });
 
@@ -44,8 +46,10 @@ const saunas = defineCollection({
     description: z.string(),
     amenities: z.array(z.string()),
     rules: z.array(z.string()),
-    images: z.array(z.string().url()),
-    heroImage: z.string().url()
+
+    // Поддерживает и локальные пути /images/..., и внешние https://...
+    images: z.array(z.string()),
+    heroImage: z.string()
   })
 });
 
