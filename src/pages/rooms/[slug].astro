@@ -91,7 +91,13 @@ const { Content } = await render(room);
     const roomTitle = calendarInput.dataset.roomTitle;
 
     fetch(`/api/availability/${slug}`)
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Availability API failed with status ${response.status}`);
+        }
+
+        return response.json();
+      })
       .then((data) => {
         calendarStatus.textContent = data.bookedDates?.length
           ? `Занятые даты загружены: ${data.bookedDates.length} дней.`

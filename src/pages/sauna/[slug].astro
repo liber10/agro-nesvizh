@@ -352,7 +352,13 @@ const { Content } = await render(sauna);
     fillSelect(endSelect, [], 'Сначала выберите начало');
 
     fetch(`/api/sauna-availability/${slug}`)
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Sauna availability API failed with status ${response.status}`);
+        }
+
+        return response.json();
+      })
       .then((data) => {
         bookedSlots = data.bookedSlots || [];
 

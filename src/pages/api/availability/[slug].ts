@@ -17,6 +17,24 @@ type CachedAvailability = {
 const memoryCache = new Map<string, CachedAvailability>();
 const CACHE_TTL_MS = 1000 * 60 * 20;
 const HORIZON_DAYS = 60;
+const ICAL_TIMEOUT_MS = 8000;
+
+async function loadIcalCalendar(url: string) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), ICAL_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+
+    if (!response.ok) {
+      throw new Error(`iCal request failed with status ${response.status}`);
+    }
+
+    return ical.async.parseICS(await response.text());
+  } finally {
+    clearTimeout(timeout);
+  }
+}
 
 function enumerateNights(start: Date, end: Date, today: Date, horizon: Date): string[] {
   const dates: string[] = [];
@@ -57,7 +75,7 @@ export const GET: APIRoute = async ({ params }) => {
   try {
     const today = startOfDay(new Date());
     const horizon = addDays(today, HORIZON_DAYS);
-    const calendar = await ical.async.fromURL(room.data.icalUrl);
+    const calendar = await loadIcalCalendar(room.data.icalUrl);
     const booked = new Set<string>();
 
     Object.values(calendar).forEach((item: any) => {

@@ -7,11 +7,13 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "photos:territory": "node scripts/process-territory-photos.mjs"
   },
   "dependencies": {
     "@astrojs/netlify": "6.6.4",
     "@astrojs/tailwind": "6.0.2",
+    "@netlify/blobs": "^10.7.4",
     "astro": "5.18.1",
     "date-fns": "^3.6.0",
     "flatpickr": "^4.6.13",

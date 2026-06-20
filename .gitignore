@@ -4,4 +4,7 @@ dist/
 .netlify/
 .env
 .env.*
-raw-photos/
+raw-photos/*
+!raw-photos/territory/
+raw-photos/territory/*
+!raw-photos/territory/.gitkeep

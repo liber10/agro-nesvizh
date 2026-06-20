@@ -152,6 +152,7 @@
   const modal = document.getElementById('booking-modal');
   const form = document.getElementById('booking-form');
   const statusEl = document.querySelector('[data-form-status]');
+  const submitButton = form?.querySelector('button[type="submit"]');
   const summaryEl = document.querySelector('[data-booking-summary]');
   const timeFields = document.querySelector('[data-time-fields]');
 
@@ -167,6 +168,28 @@
   const manualCheckOut = form?.querySelector('input[name="manualCheckOut"]');
   const manualStartTime = form?.querySelector('input[name="manualStartTime"]');
   const manualEndTime = form?.querySelector('input[name="manualEndTime"]');
+
+  function appendSummaryLine(label, value) {
+    const line = document.createElement('div');
+    const strong = document.createElement('b');
+
+    strong.textContent = label;
+    line.append(strong, ` ${value}`);
+
+    return line;
+  }
+
+  function renderBookingSummary(detail) {
+    if (!summaryEl) {
+      return;
+    }
+
+    summaryEl.replaceChildren(
+      appendSummaryLine('Выбран объект:', detail.roomTitle || 'Баня'),
+      appendSummaryLine('Дата:', detail.checkIn || 'не выбрана'),
+      appendSummaryLine('Время:', `${detail.startTime || '—'}–${detail.endTime || '—'}`)
+    );
+  }
 
   function openBookingModal(detail = {}) {
     const bookingType = detail.bookingType || 'Покой';
@@ -189,11 +212,7 @@
 
       if (summaryEl) {
         summaryEl.classList.remove('hidden');
-        summaryEl.innerHTML = `
-          <b>Выбран объект:</b> ${detail.roomTitle || 'Баня'}<br>
-          <b>Дата:</b> ${detail.checkIn || 'не выбрана'}<br>
-          <b>Время:</b> ${detail.startTime || '—'}–${detail.endTime || '—'}
-        `;
+        renderBookingSummary(detail);
       }
     } else {
       timeFields?.classList.add('hidden');
@@ -302,6 +321,7 @@
     statusEl.classList.remove('hidden');
     statusEl.className = 'rounded-xl border border-gold/40 bg-gold/10 px-4 py-3 text-sm font-semibold text-ink';
     statusEl.textContent = 'Отправляем заявку...';
+    submitButton.disabled = true;
 
     const data = Object.fromEntries(new FormData(form));
 
@@ -321,17 +341,25 @@
         body: JSON.stringify(data)
       });
 
+      const result = await response.json().catch(() => ({}));
+
       if (!response.ok) {
-        throw new Error('Telegram API error');
+        const error = new Error(result.message || 'Telegram API error');
+        error.isDuplicate = Boolean(result.duplicate);
+        throw error;
       }
 
       statusEl.className = 'rounded-xl border border-green-700/30 bg-green-50 px-4 py-3 text-sm font-semibold text-green-800';
-      statusEl.textContent = 'Заявка отправлена. Скоро с вами свяжутся.';
+      statusEl.textContent = result.message || 'Заявка принята. Бот передал ее в Telegram, скоро с вами свяжутся.';
 
       form.reset();
     } catch (error) {
       statusEl.className = 'rounded-xl border border-burgundy/30 bg-burgundy/10 px-4 py-3 text-sm font-semibold text-burgundy';
-      statusEl.textContent = 'Не удалось отправить заявку. Проверьте TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID в Netlify.';
+      statusEl.textContent = error.isDuplicate
+        ? error.message
+        : 'Не удалось отправить заявку. Проверьте TELEGRAM_BOT_TOKEN, TELEGRAM_GROUP_CHAT_ID и TELEGRAM_CHAT_ID в Netlify.';
+    } finally {
+      submitButton.disabled = false;
     }
   });
 </script>

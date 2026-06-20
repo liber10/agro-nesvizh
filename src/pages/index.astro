@@ -5,6 +5,7 @@ import RoomCard from '../components/RoomCard.astro';
 import SaunaCard from '../components/SaunaCard.astro';
 import SectionTitle from '../components/SectionTitle.astro';
 import MapBlock from '../components/MapBlock.astro';
+import territoryGallery from '../data/territory-gallery.json';
 
 const rooms = (await getCollection('rooms')).sort((a, b) =>
   a.data.sutochnoId.localeCompare(b.data.sutochnoId)
@@ -15,6 +16,8 @@ const saunas = await getCollection('saunas');
 const guides = (await getCollection('guides'))
   .sort((a, b) => a.data.order - b.data.order)
   .slice(0, 3);
+
+const [territoryHero, ...territoryItems] = territoryGallery;
 ---
 
 <BaseLayout>
@@ -62,6 +65,66 @@ const guides = (await getCollection('guides'))
 
       <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
         {rooms.map((room) => <RoomCard room={room} />)}
+      </div>
+    </div>
+  </section>
+
+  <section id="territory" class="border-y border-gold/25 bg-[#f4ead8] px-5 py-20 lg:px-8">
+    <div class="mx-auto max-w-7xl">
+      <SectionTitle
+        eyebrow="Территория"
+        title="Двор, тишина и место для выдоха"
+        subtitle="После прогулки по Несвижу здесь можно спокойно вернуться к себе: выпить чай, посидеть на воздухе и провести вечер без городской спешки."
+      />
+
+      <div class="grid gap-4 lg:grid-cols-[1.2fr_.8fr]">
+        <figure class="group relative min-h-[360px] overflow-hidden rounded-[1.75rem] border border-gold/40 shadow-old lg:min-h-[620px]">
+          <img
+            class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]"
+            src={territoryHero.src}
+            alt={territoryHero.alt}
+            loading="lazy"
+          />
+
+          <figcaption class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-burgundy/80 to-transparent px-6 pb-6 pt-24">
+            <p class="font-display text-3xl font-black text-ivory">
+              {territoryHero.label}
+            </p>
+          </figcaption>
+        </figure>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          {territoryItems.map((item) => (
+            <figure class="group relative min-h-56 overflow-hidden rounded-[1.5rem] border border-gold/40 shadow-old">
+              <img
+                class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.04]"
+                src={item.src}
+                alt={item.alt}
+                loading="lazy"
+              />
+
+              <figcaption class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/75 to-transparent px-4 pb-4 pt-16">
+                <p class="font-display text-xl font-black text-ivory">
+                  {item.label}
+                </p>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+
+      <div class="mt-8 grid gap-4 text-sm leading-6 text-ink/70 md:grid-cols-3">
+        <p class="rounded-2xl border border-gold/35 bg-ivory/70 p-5">
+          Удобно для семей: можно выбрать номер с балконом или выходом к двору.
+        </p>
+
+        <p class="rounded-2xl border border-gold/35 bg-ivory/70 p-5">
+          Есть бытовые мелочи для длинного отдыха: кухня, зона отдыха и место для вечерних посиделок.
+        </p>
+
+        <p class="rounded-2xl border border-gold/35 bg-ivory/70 p-5">
+          До главных прогулочных маршрутов Несвижа легко добраться без долгой дороги.
+        </p>
       </div>
     </div>
   </section>

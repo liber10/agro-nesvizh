@@ -1,0 +1,27 @@
+[
+  {
+    "src": "/images/decor/nesvizh-engraving-wide.png",
+    "alt": "Усадьба рядом с историческим Несвижем",
+    "label": "Тихое место рядом с историческим центром"
+  },
+  {
+    "src": "/images/rooms/room-1/agrousadba-nesvizhskaya-dvoryanskiy-nomer-1-zona-otdyha.webp",
+    "alt": "Зона отдыха в агроусадьбе",
+    "label": "Места для спокойного отдыха"
+  },
+  {
+    "src": "/images/rooms/room-1/agrousadba-nesvizhskaya-dvoryanskiy-nomer-1-kuhonnyy-ugolok.webp",
+    "alt": "Кухонный уголок для гостей",
+    "label": "Кухня и бытовые удобства"
+  },
+  {
+    "src": "https://static.sutochno.ru/doc/files/objects/0/545/309/1020x690/69f2dce60c6b3.png",
+    "alt": "Балкон с видом на территорию",
+    "label": "Балконы и вид во двор"
+  },
+  {
+    "src": "https://static.sutochno.ru/doc/files/objects/0/545/383/1020x690/5b2bad5fd3443.jpg",
+    "alt": "Баня при усадьбе",
+    "label": "Баня для теплого вечера"
+  }
+]

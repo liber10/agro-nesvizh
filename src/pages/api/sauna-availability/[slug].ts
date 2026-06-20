@@ -30,6 +30,24 @@ const memoryCache = new Map<string, CachedAvailability>();
 const CACHE_TTL_MS = 1000 * 60 * 10;
 const HORIZON_DAYS = 60;
 const TIME_ZONE = 'Europe/Minsk';
+const ICAL_TIMEOUT_MS = 8000;
+
+async function loadIcalCalendar(url: string) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), ICAL_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+
+    if (!response.ok) {
+      throw new Error(`iCal request failed with status ${response.status}`);
+    }
+
+    return ical.async.parseICS(await response.text());
+  } finally {
+    clearTimeout(timeout);
+  }
+}
 
 function formatDateInTimeZone(date: Date, timeZone = TIME_ZONE): string {
   const parts = new Intl.DateTimeFormat('en-CA', {
@@ -126,7 +144,7 @@ export const GET: APIRoute = async ({ params }) => {
   try {
     const today = startOfDay(new Date());
     const horizon = addDays(today, HORIZON_DAYS);
-    const calendar = await ical.async.fromURL(sauna.data.icalUrl);
+    const calendar = await loadIcalCalendar(sauna.data.icalUrl);
 
     const bookedSlots: BookedSlot[] = [];
 

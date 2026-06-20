@@ -1,9 +1,16 @@
 ---
-interface Props { eyebrow?: string; title: string; subtitle?: string; }
-const { eyebrow, title, subtitle } = Astro.props;
+interface Props {
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+  as?: 'h1' | 'h2';
+}
+
+const { eyebrow, title, subtitle, as = 'h2' } = Astro.props;
+const HeadingTag = as;
 ---
 <div class="fleur mx-auto mb-10 max-w-3xl text-center">
   {eyebrow && <p class="mb-3 text-xs font-extrabold uppercase tracking-[.38em] text-burgundy/70">{eyebrow}</p>}
-  <h2 class="font-display text-4xl font-black text-burgundy md:text-6xl">{title}</h2>
+  <HeadingTag class="font-display text-4xl font-black text-burgundy md:text-6xl">{title}</HeadingTag>
   {subtitle && <p class="mx-auto mt-4 max-w-2xl text-lg italic leading-8 text-ink/65">{subtitle}</p>}
 </div>

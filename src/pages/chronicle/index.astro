@@ -7,7 +7,7 @@ const guides = (await getCollection('guides')).sort((a, b) => a.data.order - b.d
 <BaseLayout title="Летопись Несвижа — Агроусадьба Несвижская" description="Истории и маршруты для гостей агроусадьбы в Несвиже.">
   <section class="px-5 py-16 lg:px-8">
     <div class="mx-auto max-w-7xl">
-      <SectionTitle title="Летопись Несвижа" subtitle="Истории, маршруты и спокойное погружение в место" />
+      <SectionTitle as="h1" title="Летопись Несвижа" subtitle="Истории, маршруты и спокойное погружение в место" />
       <div class="grid gap-8 md:grid-cols-3">
         {guides.map((guide) => (
           <a href={`/chronicle/${guide.slug}`} class="group overflow-hidden rounded-2xl paper-panel">

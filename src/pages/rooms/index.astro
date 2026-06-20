@@ -9,7 +9,7 @@ const rooms = (await getCollection('rooms')).sort((a, b) => Number(a.data.sutoch
 <BaseLayout title="Покои — Агроусадьба Несвижская" description="Все номера агроусадьбы в Несвиже: вместимость, цены, удобства и онлайн-заявка напрямую владельцу.">
   <section class="px-5 py-16 lg:px-8">
     <div class="mx-auto max-w-7xl">
-      <SectionTitle title="Наши Покои" subtitle="Выберите номер, проверьте даты и отправьте заявку напрямую владельцу" />
+      <SectionTitle as="h1" title="Наши Покои" subtitle="Выберите номер, проверьте даты и отправьте заявку напрямую владельцу" />
       <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
         {rooms.map((room) => <RoomCard room={room} />)}
       </div>
