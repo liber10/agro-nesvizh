@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getStore } from '@netlify/blobs';
-import { createHash } from 'node:crypto';
+import { createHash, randomBytes } from 'node:crypto';
 
 export const prerender = false;
 
@@ -9,11 +9,21 @@ type DuplicateEntry = {
   submittedAt: string;
 };
 
+type TelegramConfirmationEntry = {
+  expires: number;
+  createdAt: string;
+  message: string;
+  normalizedPhone: string;
+};
+
 const duplicateMemoryCache = new Map<string, DuplicateEntry>();
+const confirmationMemoryCache = new Map<string, TelegramConfirmationEntry>();
 const pendingPhones = new Set<string>();
 
 const DUPLICATE_TTL_MINUTES = Number(import.meta.env.BOOKING_DUPLICATE_TTL_MINUTES || 30);
 const DUPLICATE_TTL_MS = Math.max(1, DUPLICATE_TTL_MINUTES) * 60 * 1000;
+const CONFIRMATION_TTL_MINUTES = Number(import.meta.env.TELEGRAM_CONFIRMATION_TTL_MINUTES || 1440);
+const CONFIRMATION_TTL_MS = Math.max(5, CONFIRMATION_TTL_MINUTES) * 60 * 1000;
 
 function clean(value: unknown): string {
   return String(value ?? '').trim().slice(0, 1200);
@@ -118,6 +128,21 @@ async function rememberSubmission(phone: string): Promise<void> {
   await setDuplicateInBlob(key, value);
 }
 
+function createConfirmationToken(): string {
+  return randomBytes(12).toString('hex');
+}
+
+async function rememberTelegramConfirmation(token: string, value: TelegramConfirmationEntry): Promise<void> {
+  confirmationMemoryCache.set(token, value);
+
+  try {
+    const store = getStore('telegram-confirmations');
+    await store.setJSON(token, value);
+  } catch {
+    // Local dev and non-Netlify environments fall back to memory cache.
+  }
+}
+
 function getTelegramRecipients(): string[] {
   const groupChatId = clean(import.meta.env.TELEGRAM_GROUP_CHAT_ID);
   const ownerChatId = clean(import.meta.env.TELEGRAM_CHAT_ID);
@@ -172,6 +197,23 @@ function makeDateTimeLine(payload: Record<string, unknown>): string {
   return [
     `📅 <b>Заезд:</b> ${checkIn || 'не указан'}`,
     `📅 <b>Выезд:</b> ${checkOut || 'не указан'}`
+  ].join('\n');
+}
+
+function makeGuestConfirmationMessage(payload: Record<string, unknown>): string {
+  const bookingType = escapeHtml(payload.bookingType) || 'Бронирование';
+  const objectTitle = escapeHtml(payload.roomTitle) || 'не выбран';
+
+  return [
+    '✅ <b>Заявка принята</b>',
+    '',
+    'Мы получили вашу заявку и передали ее владельцу.',
+    '',
+    `🏷️ <b>Тип:</b> ${bookingType}`,
+    `🏰 <b>Объект:</b> ${objectTitle}`,
+    makeDateTimeLine(payload),
+    '',
+    'Скоро с вами свяжутся для подтверждения даты и условий.'
   ].join('\n');
 }
 
@@ -246,12 +288,27 @@ export const POST: APIRoute = async ({ request }) => {
 
     await rememberSubmission(normalizedPhone);
 
+    let telegramBotUrl: string | undefined;
+
+    if (wantsTelegram && botUsername) {
+      const confirmationToken = createConfirmationToken();
+
+      await rememberTelegramConfirmation(confirmationToken, {
+        expires: Date.now() + CONFIRMATION_TTL_MS,
+        createdAt: new Date().toISOString(),
+        message: makeGuestConfirmationMessage(payload),
+        normalizedPhone
+      });
+
+      telegramBotUrl = `https://t.me/${botUsername}?start=booking_${confirmationToken}`;
+    }
+
     return jsonResponse({
       ok: true,
       message: wantsTelegram
-        ? 'Заявка принята. Бот передал ее в Telegram. Чтобы бот мог написать вам первым, откройте его и нажмите Start.'
+        ? 'Заявка принята. Бот передал ее в Telegram. Откройте бота и нажмите Start, чтобы получить подтверждение в Telegram.'
         : 'Заявка принята. Бот передал ее в Telegram, скоро с вами свяжутся.',
-      telegramBotUrl: wantsTelegram && botUsername ? `https://t.me/${botUsername}` : undefined
+      telegramBotUrl
     });
   } catch (error) {
     return jsonResponse({ ok: false, error: String(error) }, 502);
