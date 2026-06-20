@@ -76,10 +76,23 @@
           required
         >
           <option value="Telegram">Telegram</option>
-          <option value="WhatsApp">WhatsApp</option>
-          <option value="MAX">MAX</option>
           <option value="Звонок">Звонок</option>
+          <option value="MAX">MAX</option>
+          <option value="WhatsApp">WhatsApp</option>
         </select>
+      </label>
+
+      <label class="grid gap-2 text-sm font-bold text-ink/80" data-telegram-contact>
+        Ваш Telegram
+        <input
+          class="rounded-xl border border-gold/40 bg-white/70 px-4 py-3 outline-none focus:border-burgundy"
+          name="telegramUsername"
+          placeholder="@username"
+          autocomplete="off"
+        />
+        <span class="text-xs font-normal leading-5 text-ink/55">
+          Если укажете username, владельцу будет проще ответить вам в Telegram.
+        </span>
       </label>
 
       <div class="grid gap-4 md:grid-cols-2">
@@ -153,6 +166,9 @@
   const form = document.getElementById('booking-form');
   const statusEl = document.querySelector('[data-form-status]');
   const submitButton = form?.querySelector('button[type="submit"]');
+  const messengerSelect = form?.querySelector('select[name="messenger"]');
+  const telegramContact = document.querySelector('[data-telegram-contact]');
+  const telegramUsernameInput = form?.querySelector('input[name="telegramUsername"]');
   const summaryEl = document.querySelector('[data-booking-summary]');
   const timeFields = document.querySelector('[data-time-fields]');
 
@@ -168,6 +184,19 @@
   const manualCheckOut = form?.querySelector('input[name="manualCheckOut"]');
   const manualStartTime = form?.querySelector('input[name="manualStartTime"]');
   const manualEndTime = form?.querySelector('input[name="manualEndTime"]');
+
+  function syncTelegramContact() {
+    const isTelegram = messengerSelect?.value === 'Telegram';
+
+    telegramContact?.classList.toggle('hidden', !isTelegram);
+
+    if (!isTelegram && telegramUsernameInput) {
+      telegramUsernameInput.value = '';
+    }
+  }
+
+  messengerSelect?.addEventListener('change', syncTelegramContact);
+  syncTelegramContact();
 
   function appendSummaryLine(label, value) {
     const line = document.createElement('div');
@@ -331,6 +360,11 @@
     data.checkOut = data.checkOut || data.manualCheckOut || data.checkIn || '';
     data.startTime = data.startTime || data.manualStartTime || '';
     data.endTime = data.endTime || data.manualEndTime || '';
+    data.telegramUsername = String(data.telegramUsername || '').trim();
+
+    if (data.telegramUsername && !data.telegramUsername.startsWith('@')) {
+      data.telegramUsername = `@${data.telegramUsername}`;
+    }
 
     try {
       const response = await fetch('/api/telegram', {
@@ -352,7 +386,22 @@
       statusEl.className = 'rounded-xl border border-green-700/30 bg-green-50 px-4 py-3 text-sm font-semibold text-green-800';
       statusEl.textContent = result.message || 'Заявка принята. Бот передал ее в Telegram, скоро с вами свяжутся.';
 
+      if (result.telegramBotUrl) {
+        const text = document.createElement('span');
+        const link = document.createElement('a');
+
+        text.textContent = statusEl.textContent;
+        link.href = result.telegramBotUrl;
+        link.target = '_blank';
+        link.rel = 'noreferrer';
+        link.className = 'mt-3 inline-block rounded-xl border border-green-700/30 px-4 py-2 text-green-900 underline';
+        link.textContent = 'Открыть бота в Telegram';
+
+        statusEl.replaceChildren(text, document.createElement('br'), link);
+      }
+
       form.reset();
+      syncTelegramContact();
     } catch (error) {
       statusEl.className = 'rounded-xl border border-burgundy/30 bg-burgundy/10 px-4 py-3 text-sm font-semibold text-burgundy';
       statusEl.textContent = error.isDuplicate

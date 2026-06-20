@@ -131,6 +131,17 @@ function getTelegramRecipients(): string[] {
   return [...new Set(recipients.filter(Boolean))];
 }
 
+function getTelegramBotUsername(): string {
+  return clean(import.meta.env.TELEGRAM_BOT_USERNAME || 'nesvizh_bot').replace(/^@+/, '');
+}
+
+function normalizeTelegramUsername(value: unknown): string {
+  return clean(value)
+    .replace(/^@+/, '')
+    .replace(/[^\w\d_]/g, '')
+    .slice(0, 32);
+}
+
 async function sendTelegramMessage(token: string, chatId: string, message: string): Promise<Response> {
   return fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
     method: 'POST',
@@ -202,6 +213,10 @@ export const POST: APIRoute = async ({ request }) => {
 
   const bookingType = escapeHtml(payload.bookingType) || 'Бронирование';
   const objectTitle = escapeHtml(payload.roomTitle) || 'не выбран';
+  const messenger = escapeHtml(payload.messenger) || 'не указан';
+  const telegramUsername = normalizeTelegramUsername(payload.telegramUsername);
+  const wantsTelegram = clean(payload.messenger) === 'Telegram';
+  const botUsername = getTelegramBotUsername();
 
   const message = [
     '🕯️ <b>Новая заявка — Агроусадьба Несвижская</b>',
@@ -210,13 +225,14 @@ export const POST: APIRoute = async ({ request }) => {
     `🏰 <b>Объект:</b> ${objectTitle}`,
     `👤 <b>Имя:</b> ${escapeHtml(payload.name)}`,
     `📞 <b>Телефон:</b> ${escapeHtml(payload.phone)}`,
-    `💬 <b>Мессенджер:</b> ${escapeHtml(payload.messenger)}`,
+    `💬 <b>Связаться:</b> ${messenger}`,
+    telegramUsername ? `📨 <b>Telegram:</b> @${escapeHtml(telegramUsername)}` : '',
     makeDateTimeLine(payload),
     '',
     `📝 <b>Комментарий:</b> ${escapeHtml(payload.comment) || '—'}`,
     '',
     `🔗 <b>Источник:</b> сайт`
-  ].join('\n');
+  ].filter(Boolean).join('\n');
 
   try {
     const results = await Promise.all(recipients.map((chatId) => sendTelegramMessage(token, chatId, message)));
@@ -232,7 +248,10 @@ export const POST: APIRoute = async ({ request }) => {
 
     return jsonResponse({
       ok: true,
-      message: 'Заявка принята. Бот передал ее в Telegram, скоро с вами свяжутся.'
+      message: wantsTelegram
+        ? 'Заявка принята. Бот передал ее в Telegram. Чтобы бот мог написать вам первым, откройте его и нажмите Start.'
+        : 'Заявка принята. Бот передал ее в Telegram, скоро с вами свяжутся.',
+      telegramBotUrl: wantsTelegram && botUsername ? `https://t.me/${botUsername}` : undefined
     });
   } catch (error) {
     return jsonResponse({ ok: false, error: String(error) }, 502);
